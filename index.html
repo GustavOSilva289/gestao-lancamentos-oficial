@@ -1,45 +1,479 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1F5C3F">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Lançamentos">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./logo.svg">
-<link rel="apple-touch-icon" href="./logo.svg">
-<title>Gestão de Lançamentos</title>
-<style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#153F2B;font-family:Arial,sans-serif}
-#app{position:fixed;inset:0;width:100%;height:100%;border:0;background:white}
-#splash{position:fixed;inset:0;z-index:10;background:#153F2B;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;transition:opacity .35s}
-#splash img{width:110px;height:110px;object-fit:contain;margin-bottom:18px}
-#splash strong{font-size:22px}
-#splash span{font-size:13px;opacity:.8;margin-top:6px}
-</style>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#1F5C3F">
+
+  <!-- PWA -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Lançamentos"
+  >
+
+  <!-- Manifest -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Ícones -->
+  <link rel="icon" href="./logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./logo.svg">
+
+  <title>Gestão de Lançamentos</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #153F2B;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: block;
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+
+    #app.loaded {
+      opacity: 1;
+    }
+
+    /* Tela de carregamento */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+
+      width: 100%;
+      height: 100%;
+
+      background: #153F2B;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+
+      color: #ffffff;
+
+      transition:
+        opacity .35s ease,
+        visibility .35s ease;
+    }
+
+    #splash.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #splash img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 18px;
+    }
+
+    #splash strong {
+      font-size: 22px;
+      line-height: 1.2;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    #splash span {
+      font-size: 13px;
+      opacity: .8;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* Indicador simples */
+    #loader {
+      width: 32px;
+      height: 32px;
+      margin-top: 20px;
+
+      border: 3px solid rgba(255,255,255,.25);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+
+      animation: girar .8s linear infinite;
+    }
+
+    @keyframes girar {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Tela de erro */
+    #erro {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px;
+      background: #153F2B;
+      color: #ffffff;
+
+      text-align: center;
+    }
+
+    #erro.mostrar {
+      display: flex;
+    }
+
+    #erro .caixa {
+      width: min(420px, 100%);
+    }
+
+    #erro h2 {
+      margin: 0 0 10px;
+      font-size: 21px;
+    }
+
+    #erro p {
+      margin: 0 0 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: .9;
+    }
+
+    #erro button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 20px;
+
+      background: #ffffff;
+      color: #153F2B;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    #erro button:active {
+      transform: scale(.98);
+    }
+
+    /* Evita problemas com notch / barras do celular */
+    @supports (padding: env(safe-area-inset-top)) {
+      #app {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div id="splash">
-  <img src="./logo.svg" alt="Logo">
-  <strong>Gestão de Lançamentos</strong>
-  <span>Carregando...</span>
-</div>
-<iframe id="app" src="https://script.google.com/macros/s/AKfycbxVwlijrxJ4fIG0MDTc0W3GgScDtmDr0WKwkTTfv1ezwB1OYKb8r83Nf5g93gznqJ65bg/exec" allow="clipboard-read; clipboard-write; camera; microphone"></iframe>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(console.error);
-}
-const frame = document.getElementById('app');
-frame.addEventListener('load', () => {
-  setTimeout(() => {
-    const s = document.getElementById('splash');
-    s.style.opacity = '0';
-    setTimeout(() => s.remove(), 400);
-  }, 250);
-});
-</script>
+
+  <!-- ======================================================
+       SPLASH SCREEN
+       ====================================================== -->
+  <div id="splash">
+
+    <img
+      src="./logo.svg"
+      alt="Logo Gestão de Lançamentos"
+      onerror="this.style.display='none';"
+    >
+
+    <strong>Gestão de Lançamentos</strong>
+
+    <span id="statusCarregamento">
+      Carregando...
+    </span>
+
+    <div id="loader"></div>
+
+  </div>
+
+
+  <!-- ======================================================
+       APLICAÇÃO GOOGLE APPS SCRIPT
+       ====================================================== -->
+
+  <iframe
+    id="app"
+    title="Gestão de Lançamentos"
+    src="https://script.google.com/macros/s/AKfycbxVwlijrxJ4fIG0MDTc0W3GgScDtmDr0WKwkTTfv1ezwB1OYKb8r83Nf5g93gznqJ65bg/exec"
+    allow="clipboard-read; clipboard-write; camera; microphone"
+    referrerpolicy="no-referrer"
+    loading="eager"
+    scrolling="no"
+    frameborder="0"
+  ></iframe>
+
+
+  <!-- ======================================================
+       TELA DE ERRO
+       ====================================================== -->
+
+  <div id="erro">
+
+    <div class="caixa">
+
+      <h2>Não foi possível carregar o sistema</h2>
+
+      <p>
+        O sistema não conseguiu carregar neste momento.
+        Verifique sua conexão com a internet e tente novamente.
+      </p>
+
+      <button
+        type="button"
+        onclick="window.location.reload()"
+      >
+        Tentar novamente
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+    /*
+     * ========================================================
+     * CONFIGURAÇÃO
+     * ========================================================
+     */
+
+    const APP_URL =
+      'https://script.google.com/macros/s/AKfycbxVwlijrxJ4fIG0MDTc0W3GgScDtmDr0WKwkTTfv1ezwB1OYKb8r83Nf5g93gznqJ65bg/exec';
+
+    const frame = document.getElementById('app');
+    const splash = document.getElementById('splash');
+    const erro = document.getElementById('erro');
+    const statusCarregamento =
+      document.getElementById('statusCarregamento');
+
+
+    /*
+     * ========================================================
+     * SERVICE WORKER
+     * ========================================================
+     */
+
+    if ('serviceWorker' in navigator) {
+
+      window.addEventListener('load', function () {
+
+        navigator.serviceWorker
+          .register('./sw.js', {
+            scope: './'
+          })
+          .then(function (registration) {
+
+            console.log(
+              '[PWA] Service Worker registrado:',
+              registration.scope
+            );
+
+          })
+          .catch(function (error) {
+
+            console.warn(
+              '[PWA] Service Worker não registrado:',
+              error
+            );
+
+          });
+
+      });
+
+    }
+
+
+    /*
+     * ========================================================
+     * CARREGAMENTO DO APP
+     * ========================================================
+     */
+
+    let carregou = false;
+
+    function esconderSplash() {
+
+      if (carregou) return;
+
+      carregou = true;
+
+      frame.classList.add('loaded');
+
+      setTimeout(function () {
+
+        splash.classList.add('hidden');
+
+      }, 250);
+
+    }
+
+
+    /*
+     * O iframe carregou
+     */
+
+    frame.addEventListener('load', function () {
+
+      console.log(
+        '[PWA] Aplicação Google Apps Script carregada.'
+      );
+
+      statusCarregamento.textContent =
+        'Sistema carregado';
+
+      /*
+       * Pequeno atraso para evitar que o splash
+       * desapareça antes da renderização inicial.
+       */
+
+      setTimeout(function () {
+        esconderSplash();
+      }, 250);
+
+    });
+
+
+    /*
+     * Erro de carregamento do iframe
+     */
+
+    frame.addEventListener('error', function (event) {
+
+      console.error(
+        '[PWA] Erro ao carregar o Apps Script:',
+        event
+      );
+
+      splash.classList.add('hidden');
+      erro.classList.add('mostrar');
+
+    });
+
+
+    /*
+     * Segurança:
+     * se o iframe não disparar o evento esperado,
+     * não deixamos o splash preso indefinidamente.
+     */
+
+    setTimeout(function () {
+
+      if (!carregou) {
+
+        console.warn(
+          '[PWA] Tempo de carregamento excedido.'
+        );
+
+        /*
+         * Não mostramos erro imediatamente.
+         * O Apps Script pode demorar dependendo da conexão.
+         */
+
+        statusCarregamento.textContent =
+          'Conectando ao sistema...';
+
+      }
+
+    }, 8000);
+
+
+    /*
+     * ========================================================
+     * VISIBILIDADE / RETORNO AO APP
+     * ========================================================
+     */
+
+    document.addEventListener(
+      'visibilitychange',
+      function () {
+
+        if (
+          document.visibilityState === 'visible' &&
+          frame
+        ) {
+
+          console.log(
+            '[PWA] Aplicação voltou para primeiro plano.'
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+     * ========================================================
+     * PREVENÇÃO DE ZOOM ACIDENTAL
+     * ========================================================
+     */
+
+    document.addEventListener(
+      'gesturestart',
+      function (event) {
+        event.preventDefault();
+      }
+    );
+
+
+    /*
+     * ========================================================
+     * DEBUG
+     * ========================================================
+     */
+
+    console.log(
+      '[PWA] Gestão de Lançamentos inicializado.'
+    );
+
+    console.log(
+      '[PWA] URL do Apps Script:',
+      APP_URL
+    );
+
+  </script>
+
 </body>
 </html>
