@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="utf-8">
 
   <meta
@@ -8,108 +10,600 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
+  <!-- =====================================================
+       PWA
+       ===================================================== -->
+
   <meta name="theme-color" content="#1F5C3F">
 
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
 
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" href="./logo.svg" type="image/svg+xml">
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Lançamentos"
+  >
+
+
+  <!-- =====================================================
+       MANIFEST
+       ===================================================== -->
+
+  <link
+    rel="manifest"
+    href="./manifest.json"
+  >
+
+
+  <!-- =====================================================
+       ÍCONE DO APLICATIVO
+       ===================================================== -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="./icon-192.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="./icon-192.png"
+  >
+
 
   <title>Gestão de Lançamentos</title>
 
+
+  <!-- =====================================================
+       ESTILO
+       ===================================================== -->
+
   <style>
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+
     html,
     body {
-      margin: 0;
-      padding: 0;
+
       width: 100%;
       height: 100%;
+
+      margin: 0;
+      padding: 0;
+
+      overflow: hidden;
+
       background: #153F2B;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     }
+
 
     body {
+
       display: flex;
+
       align-items: center;
       justify-content: center;
-      font-family: Arial, sans-serif;
-      color: white;
+
+      min-height: 100vh;
+
+      min-height: 100dvh;
+
     }
 
-    .loading {
+
+    /* =====================================================
+       TELA DE CARREGAMENTO
+       ===================================================== */
+
+    #loading {
+
+      width: 100%;
+      height: 100%;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      flex-direction: column;
+
+      padding: 30px;
+
       text-align: center;
+
+      color: #ffffff;
+
     }
 
-    .logo {
-      width: 100px;
-      height: 100px;
+
+    #logo {
+
+      width: 110px;
+      height: 110px;
+
       object-fit: contain;
+
       margin-bottom: 20px;
+
     }
 
-    h1 {
-      font-size: 22px;
-      margin: 0 0 8px;
-    }
 
-    p {
-      font-size: 13px;
-      opacity: .8;
+    #titulo {
+
       margin: 0;
+
+      font-size: 23px;
+
+      font-weight: 700;
+
+      line-height: 1.2;
+
     }
 
-    .spinner {
-      width: 30px;
-      height: 30px;
+
+    #mensagem {
+
+      margin-top: 8px;
+
+      font-size: 13px;
+
+      opacity: .8;
+
+    }
+
+
+    /* =====================================================
+       LOADING
+       ===================================================== */
+
+    #spinner {
+
+      width: 32px;
+      height: 32px;
+
+      margin-top: 22px;
+
       border: 3px solid rgba(255,255,255,.25);
-      border-top-color: white;
+
+      border-top-color: #ffffff;
+
       border-radius: 50%;
-      margin: 20px auto 0;
-      animation: spin .8s linear infinite;
+
+      animation:
+        girar .8s linear infinite;
+
     }
 
-    @keyframes spin {
+
+    @keyframes girar {
+
+      from {
+        transform: rotate(0deg);
+      }
+
       to {
         transform: rotate(360deg);
       }
+
     }
+
+
+    /* =====================================================
+       ERRO
+       ===================================================== */
+
+    #erro {
+
+      display: none;
+
+      width: 100%;
+      height: 100%;
+
+      align-items: center;
+      justify-content: center;
+
+      flex-direction: column;
+
+      padding: 30px;
+
+      text-align: center;
+
+      color: #ffffff;
+
+    }
+
+
+    #erro.mostrar {
+
+      display: flex;
+
+    }
+
+
+    #erro h2 {
+
+      margin: 0 0 10px;
+
+      font-size: 21px;
+
+    }
+
+
+    #erro p {
+
+      max-width: 360px;
+
+      margin: 0 0 20px;
+
+      font-size: 14px;
+
+      line-height: 1.5;
+
+      opacity: .85;
+
+    }
+
+
+    #btnTentar {
+
+      border: 0;
+
+      border-radius: 10px;
+
+      padding: 13px 22px;
+
+      background: #ffffff;
+
+      color: #153F2B;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+    }
+
+
+    #btnTentar:active {
+
+      transform: scale(.97);
+
+    }
+
+
+    /* =====================================================
+       ÁREA SEGURA PARA CELULARES COM NOTCH
+       ===================================================== */
+
+    @supports (
+      padding-top: env(safe-area-inset-top)
+    ) {
+
+      #loading,
+      #erro {
+
+        padding-top:
+          calc(30px + env(safe-area-inset-top));
+
+        padding-bottom:
+          calc(30px + env(safe-area-inset-bottom));
+
+      }
+
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
-  <div class="loading">
+
+  <!-- =====================================================
+       CARREGAMENTO
+       ===================================================== -->
+
+  <div id="loading">
 
     <img
-      class="logo"
+      id="logo"
       src="./logo.svg"
       alt="Gestão de Lançamentos"
+      onerror="this.style.display='none'"
     >
 
-    <h1>Gestão de Lançamentos</h1>
+    <h1 id="titulo">
+      Gestão de Lançamentos
+    </h1>
 
-    <p>Abrindo o sistema...</p>
+    <div id="mensagem">
+      Abrindo o sistema...
+    </div>
 
-    <div class="spinner"></div>
+    <div id="spinner"></div>
 
   </div>
 
+
+  <!-- =====================================================
+       ERRO
+       ===================================================== -->
+
+  <div id="erro">
+
+    <h2>
+      Não foi possível abrir o sistema
+    </h2>
+
+    <p>
+      Verifique sua conexão com a internet e tente novamente.
+    </p>
+
+    <button
+      id="btnTentar"
+      type="button"
+      onclick="abrirSistema()"
+    >
+      Tentar novamente
+    </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
+
   <script>
+
+    /*
+     * ======================================================
+     * URL OFICIAL DO GOOGLE APPS SCRIPT
+     * ======================================================
+     */
 
     const APP_URL =
       'https://script.google.com/macros/s/AKfycbxVwlijrxJ4fIG0MDTc0W3GgScDtmDr0WKwkTTfv1ezwB1OYKb8r83Nf5g93gznqJ65bg/exec';
 
+
     /*
-     * Redireciona diretamente para o Apps Script.
-     *
-     * Não usamos iframe.
-     * Não usamos fetch.
-     * Não usamos Service Worker para carregar o sistema.
+     * ======================================================
+     * ELEMENTOS
+     * ======================================================
      */
 
-    window.location.replace(APP_URL);
+    const loading =
+      document.getElementById('loading');
+
+    const erro =
+      document.getElementById('erro');
+
+    const mensagem =
+      document.getElementById('mensagem');
+
+
+    /*
+     * ======================================================
+     * ABRIR SISTEMA
+     * ======================================================
+     *
+     * IMPORTANTE:
+     *
+     * NÃO usamos iframe.
+     *
+     * O Apps Script é aberto diretamente porque essa foi
+     * a configuração que voltou a funcionar no seu teste.
+     *
+     * ======================================================
+     */
+
+    function abrirSistema() {
+
+      try {
+
+        mensagem.textContent =
+          'Abrindo o sistema...';
+
+        loading.style.display =
+          'flex';
+
+        erro.classList.remove(
+          'mostrar'
+        );
+
+
+        /*
+         * Abre diretamente o endereço do sistema.
+         */
+
+        window.location.replace(
+          APP_URL
+        );
+
+      }
+
+      catch (e) {
+
+        console.error(
+          'Erro ao abrir o sistema:',
+          e
+        );
+
+        loading.style.display =
+          'none';
+
+        erro.classList.add(
+          'mostrar'
+        );
+
+      }
+
+    }
+
+
+    /*
+     * ======================================================
+     * SERVICE WORKER
+     * ======================================================
+     *
+     * Registramos o Service Worker apenas para permitir
+     * a instalação como PWA.
+     *
+     * Ele NÃO controla a abertura do Apps Script.
+     *
+     * ======================================================
+     */
+
+    if (
+      'serviceWorker' in navigator
+    ) {
+
+      window.addEventListener(
+        'load',
+        function () {
+
+          navigator.serviceWorker
+            .register(
+              './sw.js',
+              {
+                scope: './'
+              }
+            )
+            .then(
+              function (registration) {
+
+                console.log(
+                  '[PWA] Service Worker registrado:',
+                  registration.scope
+                );
+
+              }
+            )
+            .catch(
+              function (error) {
+
+                console.warn(
+                  '[PWA] Service Worker não registrado:',
+                  error
+                );
+
+              }
+            );
+
+        }
+      );
+
+    }
+
+
+    /*
+     * ======================================================
+     * INICIALIZAÇÃO
+     * ======================================================
+     */
+
+    window.addEventListener(
+      'load',
+      function () {
+
+        console.log(
+          '[PWA] Gestão de Lançamentos iniciado.'
+        );
+
+        console.log(
+          '[PWA] Aplicação:',
+          APP_URL
+        );
+
+
+        /*
+         * Pequeno atraso apenas para permitir que a tela
+         * de carregamento seja exibida.
+         */
+
+        setTimeout(
+          function () {
+
+            abrirSistema();
+
+          },
+          300
+        );
+
+      }
+    );
+
+
+    /*
+     * ======================================================
+     * TRATAMENTO DE ERRO GLOBAL
+     * ======================================================
+     */
+
+    window.addEventListener(
+      'error',
+      function (event) {
+
+        console.error(
+          '[PWA] Erro:',
+          event.error || event.message
+        );
+
+      }
+    );
+
+
+    /*
+     * ======================================================
+     * RETORNO AO APP
+     * ======================================================
+     */
+
+    document.addEventListener(
+      'visibilitychange',
+      function () {
+
+        if (
+          document.visibilityState ===
+          'visible'
+        ) {
+
+          console.log(
+            '[PWA] Aplicação visível.'
+          );
+
+        }
+
+      }
+    );
 
   </script>
 
 </body>
+
 </html>
