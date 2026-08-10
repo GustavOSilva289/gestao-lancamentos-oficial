@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F5C3F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lançamentos">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./logo.svg">
+<link rel="apple-touch-icon" href="./logo.svg">
+<title>Gestão de Lançamentos</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#153F2B;font-family:Arial,sans-serif}
+#app{position:fixed;inset:0;width:100%;height:100%;border:0;background:white}
+#splash{position:fixed;inset:0;z-index:10;background:#153F2B;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;transition:opacity .35s}
+#splash img{width:110px;height:110px;object-fit:contain;margin-bottom:18px}
+#splash strong{font-size:22px}
+#splash span{font-size:13px;opacity:.8;margin-top:6px}
+</style>
+</head>
+<body>
+<div id="splash">
+  <img src="./logo.svg" alt="Logo">
+  <strong>Gestão de Lançamentos</strong>
+  <span>Carregando...</span>
+</div>
+<iframe id="app" src="https://script.google.com/macros/s/AKfycbxVwlijrxJ4fIG0MDTc0W3GgScDtmDr0WKwkTTfv1ezwB1OYKb8r83Nf5g93gznqJ65bg/exec" allow="clipboard-read; clipboard-write; camera; microphone"></iframe>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(console.error);
+}
+const frame = document.getElementById('app');
+frame.addEventListener('load', () => {
+  setTimeout(() => {
+    const s = document.getElementById('splash');
+    s.style.opacity = '0';
+    setTimeout(() => s.remove(), 400);
+  }, 250);
+});
+</script>
+</body>
+</html>

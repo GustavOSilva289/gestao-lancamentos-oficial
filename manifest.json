@@ -1,0 +1,18 @@
+{
+  "name": "Gestão de Lançamentos",
+  "short_name": "Lançamentos",
+  "description": "Controle de compras e lançamentos financeiros",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#153F2B",
+  "theme_color": "#1F5C3F",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

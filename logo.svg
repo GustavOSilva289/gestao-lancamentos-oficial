@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#256B48"/>
+      <stop offset="100%" stop-color="#153F2B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Clipboard body -->
+  <rect x="152" y="118" width="208" height="284" rx="28" fill="#FFFFFF"/>
+  <rect x="152" y="118" width="208" height="284" rx="28" fill="none" stroke="#DCEFE4" stroke-width="0"/>
+
+  <!-- Clipboard clip -->
+  <rect x="216" y="96" width="80" height="44" rx="14" fill="#0F2E1F"/>
+  <rect x="228" y="86" width="56" height="28" rx="10" fill="#D9A441"/>
+
+  <!-- Lines on clipboard -->
+  <rect x="184" y="188" width="144" height="14" rx="7" fill="#CFE0D6"/>
+  <rect x="184" y="222" width="144" height="14" rx="7" fill="#CFE0D6"/>
+  <rect x="184" y="256" width="90" height="14" rx="7" fill="#CFE0D6"/>
+
+  <!-- Check circle badge -->
+  <circle cx="330" cy="330" r="66" fill="#D9A441"/>
+  <path d="M300 330 L320 352 L364 306" fill="none" stroke="#153F2B" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
