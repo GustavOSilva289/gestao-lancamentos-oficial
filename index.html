@@ -55,6 +55,23 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
 #btnInstalar:active { transform: scale(.97); }
 #btnInstalar svg { width: 16px; height: 16px; }
 
+#instrucaoIOS {
+  display: none;
+  margin-top: 22px;
+  max-width: 300px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.08);
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: left;
+}
+#instrucaoIOS.mostrar { display: block; }
+#instrucaoIOS b { white-space: nowrap; }
+#instrucaoIOS svg { width: 14px; height: 14px; vertical-align: -2px; }
+
 @supports (padding-top: env(safe-area-inset-top)) {
   #loading, #erro { padding-top: calc(30px + env(safe-area-inset-top)); padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
 }
@@ -73,6 +90,12 @@ body { display: flex; align-items: center; justify-content: center; min-height: 
     Instalar app
   </button>
 
+  <div id="instrucaoIOS">
+    Para instalar no iPhone: toque em
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><rect x="4" y="12" width="16" height="9" rx="2"/></svg>
+    <b>Compartilhar</b> na barra do Safari e depois em <b>"Adicionar à Tela de Início"</b>.
+  </div>
+
   <a id="linkPular" href="#" onclick="pular(event)" style="display:none; margin-top:14px; color:#ffffff; opacity:.65; font-size:12px; text-decoration:underline;">Continuar sem instalar</a>
 </div>
 
@@ -89,6 +112,7 @@ const loading = document.getElementById('loading');
 const erro = document.getElementById('erro');
 const mensagem = document.getElementById('mensagem');
 const btnInstalar = document.getElementById('btnInstalar');
+const instrucaoIOS = document.getElementById('instrucaoIOS');
 const linkPular = document.getElementById('linkPular');
 
 let deferredPrompt = null;
@@ -98,20 +122,32 @@ const jaInstalado =
   window.matchMedia('(display-mode: standalone)').matches ||
   window.navigator.standalone === true;
 
-if (!jaInstalado) {
-  window.addEventListener('beforeinstallprompt', function (event) {
-    event.preventDefault();
-    deferredPrompt = event;
-    btnInstalar.classList.add('mostrar');
-    linkPular.style.display = 'inline-block';
+const isIOS =
+  /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    // Dá um tempo extra pro usuário ver e tocar no botão
-    // antes de seguir para o sistema automaticamente.
-    if (timerAbertura) {
-      clearTimeout(timerAbertura);
-    }
+if (!jaInstalado) {
+  if (isIOS) {
+    // iOS/Safari não dispara beforeinstallprompt: mostramos
+    // instrução manual e damos o mesmo tempo de 30s antes de seguir.
+    instrucaoIOS.classList.add('mostrar');
+    linkPular.style.display = 'inline-block';
     timerAbertura = setTimeout(abrirSistema, 30000);
-  });
+  } else {
+    window.addEventListener('beforeinstallprompt', function (event) {
+      event.preventDefault();
+      deferredPrompt = event;
+      btnInstalar.classList.add('mostrar');
+      linkPular.style.display = 'inline-block';
+
+      // Dá um tempo extra pro usuário ver e tocar no botão
+      // antes de seguir para o sistema automaticamente.
+      if (timerAbertura) {
+        clearTimeout(timerAbertura);
+      }
+      timerAbertura = setTimeout(abrirSistema, 30000);
+    });
+  }
 }
 
 window.addEventListener('appinstalled', function () {
@@ -175,7 +211,9 @@ if ('serviceWorker' in navigator) {
 
 window.addEventListener('load', function () {
   console.log('[PWA] Gestão de Lançamentos iniciado.');
-  timerAbertura = setTimeout(function () { abrirSistema(); }, 300);
+  if (!timerAbertura) {
+    timerAbertura = setTimeout(function () { abrirSistema(); }, 300);
+  }
 });
 
 window.addEventListener('error', function (event) {
